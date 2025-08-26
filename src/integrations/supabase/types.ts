@@ -110,6 +110,13 @@ export type Database = {
             referencedRelation: "photos"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "face_matches_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "photos_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       photos: {
@@ -194,7 +201,53 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      photos_safe: {
+        Row: {
+          created_at: string | null
+          event_id: string | null
+          face_data: Json | null
+          faces_detected: number | null
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          id: string | null
+          mime_type: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_id?: string | null
+          face_data?: never
+          faces_detected?: number | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string | null
+          mime_type?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string | null
+          face_data?: never
+          faces_detected?: number | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string | null
+          mime_type?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photos_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       get_photo_with_secure_face_data: {
