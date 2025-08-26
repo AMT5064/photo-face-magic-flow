@@ -205,7 +205,6 @@ export type Database = {
         Row: {
           created_at: string | null
           event_id: string | null
-          face_data: Json | null
           faces_detected: number | null
           file_name: string | null
           file_path: string | null
@@ -217,7 +216,6 @@ export type Database = {
         Insert: {
           created_at?: string | null
           event_id?: string | null
-          face_data?: never
           faces_detected?: number | null
           file_name?: string | null
           file_path?: string | null
@@ -229,7 +227,6 @@ export type Database = {
         Update: {
           created_at?: string | null
           event_id?: string | null
-          face_data?: never
           faces_detected?: number | null
           file_name?: string | null
           file_path?: string | null
