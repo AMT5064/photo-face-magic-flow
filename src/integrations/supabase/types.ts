@@ -110,13 +110,6 @@ export type Database = {
             referencedRelation: "photos"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "face_matches_photo_id_fkey"
-            columns: ["photo_id"]
-            isOneToOne: false
-            referencedRelation: "photos_safe"
-            referencedColumns: ["id"]
-          },
         ]
       }
       photos: {
@@ -201,55 +194,24 @@ export type Database = {
       }
     }
     Views: {
-      photos_safe: {
-        Row: {
-          created_at: string | null
-          event_id: string | null
-          face_data: Json | null
-          faces_detected: number | null
-          file_name: string | null
-          file_path: string | null
-          file_size: number | null
-          id: string | null
-          mime_type: string | null
-          uploaded_by: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          event_id?: string | null
-          face_data?: never
-          faces_detected?: number | null
-          file_name?: string | null
-          file_path?: string | null
-          file_size?: number | null
-          id?: string | null
-          mime_type?: string | null
-          uploaded_by?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          event_id?: string | null
-          face_data?: never
-          faces_detected?: number | null
-          file_name?: string | null
-          file_path?: string | null
-          file_size?: number | null
-          id?: string | null
-          mime_type?: string | null
-          uploaded_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "photos_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
+      get_photo_with_secure_face_data: {
+        Args: { photo_row: Database["public"]["Tables"]["photos"]["Row"] }
+        Returns: {
+          created_at: string
+          event_id: string
+          face_data: Json
+          faces_detected: number
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          mime_type: string
+          uploaded_by: string
+        }[]
+      }
       get_user_role: {
         Args: { user_id: string }
         Returns: Database["public"]["Enums"]["user_role"]
