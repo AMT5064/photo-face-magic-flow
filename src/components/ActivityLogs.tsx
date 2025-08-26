@@ -7,19 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Activity, RefreshCw, User, Calendar, Camera, Upload, Shield, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import type { Database } from "@/integrations/supabase/types";
 
-interface ActivityLog {
-  id: string;
-  user_id: string;
-  activity_type: 'login' | 'logout' | 'event_created' | 'event_updated' | 'photo_uploaded' | 'face_scanned' | 'user_role_changed' | 'user_created' | 'user_deleted';
-  description: string;
-  metadata: any;
-  created_at: string;
-  profiles?: {
-    full_name: string;
-    email: string;
+type ActivityLog = Database['public']['Tables']['activity_logs']['Row'] & {
+  profiles: {
+    full_name: string | null;
+    email: string | null;
   } | null;
-}
+};
 
 const ActivityLogs = () => {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
@@ -52,7 +47,7 @@ const ActivityLogs = () => {
       const { data, error } = await query;
 
       if (error) throw error;
-      setLogs(data || []);
+      setLogs((data as unknown as ActivityLog[]) || []);
     } catch (error: any) {
       toast({
         title: "Error",
