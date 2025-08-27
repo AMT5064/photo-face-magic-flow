@@ -197,9 +197,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_face_match: {
+        Args: { match_id: string; match_user_id: string }
+        Returns: boolean
+      }
       enable_rls_on_view: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      get_biometric_scan_data: {
+        Args: { match_id: string }
+        Returns: Json
       }
       get_photo_with_secure_face_data: {
         Args: { photo_row: Database["public"]["Tables"]["photos"]["Row"] }
@@ -228,6 +236,16 @@ export type Database = {
           id: string
           mime_type: string
           uploaded_by: string
+        }[]
+      }
+      get_user_face_matches: {
+        Args: { target_user_id?: string }
+        Returns: {
+          confidence_score: number
+          id: string
+          matched_at: string
+          photo_id: string
+          user_id: string
         }[]
       }
       get_user_role: {

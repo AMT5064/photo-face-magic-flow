@@ -61,32 +61,51 @@ const FaceMatch = ({ selectedEvent, events }: FaceMatchProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      let query = supabase
+      // Use secure function to get face matches with audit logging
+      const { data: faceMatches, error: matchError } = await supabase
+        .rpc('get_user_face_matches', { 
+          target_user_id: user.id 
+        });
+
+      if (matchError) throw matchError;
+
+      if (!faceMatches || faceMatches.length === 0) {
+        setMatchedPhotos([]);
+        return;
+      }
+
+      // Get photo details for matched photos
+      const photoIds = faceMatches.map(match => match.photo_id);
+      let photoQuery = supabase
         .from('photos')
-        .select('*');
+        .select('*')
+        .in('id', photoIds);
 
       // Filter by event if one is selected
       if (selectedEvent) {
-        query = query.eq('event_id', selectedEvent);
+        photoQuery = photoQuery.eq('event_id', selectedEvent);
       }
 
-      const { data: photos, error } = await query
+      const { data: photos, error: photoError } = await photoQuery
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (photoError) throw photoError;
 
-      // Simulate face matching results with confidence scores
-      const simulatedMatches = photos?.slice(0, Math.floor(Math.random() * 8) + 2).map(photo => ({
-        ...photo,
-        confidence_score: Math.floor(Math.random() * 30) + 70 // 70-99% confidence
-      })) || [];
+      // Combine photo data with confidence scores from face matches
+      const matchedPhotosWithScores = photos?.map(photo => {
+        const match = faceMatches.find(m => m.photo_id === photo.id);
+        return {
+          ...photo,
+          confidence_score: match?.confidence_score ? Math.round(Number(match.confidence_score)) : undefined
+        };
+      }) || [];
 
-      setMatchedPhotos(simulatedMatches);
+      setMatchedPhotos(matchedPhotosWithScores);
 
-      if (simulatedMatches.length > 0) {
+      if (matchedPhotosWithScores.length > 0) {
         toast({
           title: "Matches Found!",
-          description: `Found ${simulatedMatches.length} photo${simulatedMatches.length !== 1 ? 's' : ''} containing your face.`,
+          description: `Found ${matchedPhotosWithScores.length} photo${matchedPhotosWithScores.length !== 1 ? 's' : ''} containing your face.`,
         });
       } else {
         toast({
