@@ -247,6 +247,10 @@ export type Database = {
       }
     }
     Functions: {
+      enable_rls_on_view: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       get_photo_with_secure_face_data: {
         Args: { photo_row: Database["public"]["Tables"]["photos"]["Row"] }
         Returns: {
